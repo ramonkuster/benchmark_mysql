@@ -1,0 +1,7 @@
+Operação,Tempo (s)
+Inserção de Clientes,0.48285984992980957
+Inserção de Produtos,0.39158010482788086
+Consulta Simples,0.004908084869384766
+Consulta Complexa,0.0013921260833740234
+Atualização em Massa,0.04496932029724121
+Exclusão em Massa,0.01875925064086914

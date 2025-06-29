@@ -1,7 +1,7 @@
-OperaÁ„o,Tempo (s)
-InserÁ„o de Clientes,0.48285984992980957
-InserÁ„o de Produtos,0.39158010482788086
-Consulta Simples,0.004908084869384766
-Consulta Complexa,0.0013921260833740234
-AtualizaÁ„o em Massa,0.04496932029724121
-Exclus„o em Massa,0.01875925064086914
+Opera√ß√£o,Tempo (s)
+Inser√ß√£o customers,63.2879
+Inser√ß√£o orders,63.1861
+Consulta simples,0.05
+Consulta complexa,0.3986
+Atualiza√ß√£o em massa,0.4594
+Exclus√£o em massa,0.1485

@@ -4,8 +4,7 @@ import time
 import csv
 
 # Ler o CSV
-# df = pd.read_csv(r'C:\Program Files\MySQL\MySQL Server 8.0\Uploads\olist_customers_dataset.csv')
-# df = pd.read_csv(r'C:\Program Files\MySQL\MySQL Server 8.0\Uploads\olist_orders_dataset.csv') 
+df = pd.read_csv(r'datasets\olist_orders_dataset.csv')
 
 # Conectar ao MySQL
 conexao = mysql.connector.connect(
@@ -17,21 +16,29 @@ conexao = mysql.connector.connect(
 
 cursor = conexao.cursor()
 
+
 # Medir tempo de execução
-inicio = time.time()
+# inicio = time.time()
 
 # Inserir dados
 # for _, row in df.iterrows():
 #     cursor.execute(
-#         """INSERT INTO customers (
+#         """INSERT INTO orders (
+#             order_id,
 #             customer_id,
-#             customer_unique_id,
-#             customer_zip_code_prefix,
-#             customer_city,
-#             customer_state
-#         ) VALUES (%s, %s, %s, %s, %s)""",
+#             order_status,
+#             order_purchase_timestamp,
+#             order_approved_at,
+#             order_delivered_carrier_date,
+#             order_delivered_customer_date,
+#             order_estimated_delivery_date
+#         ) VALUES (%s, %s, %s, %s, %s, %s, %s, %s)""",
 #         tuple(row)
 #     )
+
+# conexao.commit()
+# fim = time.time()
+# tempo_insercao_orders = fim - inicio
 
 # for _, row in df.iterrows():
 #     cursor.execute(
@@ -93,16 +100,16 @@ tempo_consulta = deletar()
 
 # Salvar o resultado no CSV
 def salvar_resultados_csv(linha_resultado):
-    with open('results.csv', mode='a', newline='') as file:
+    with open('results.csv', mode='a', newline='', encoding='utf-8') as file:
         writer = csv.writer(file)
         if file.tell() == 0:
             writer.writerow(['Operação', 'Tempo (s)'])
         writer.writerow(linha_resultado)
 
-operacao = 'Exclusão em massa - tabela customers'
+operacao = 'Exclusão em massa'
 linha_resultado = [operacao, round(tempo_consulta, 4)]
 
-print(f"Tempo total de exclusão: {tempo_consulta:.4f} segundos")
+print(f"Tempo total da exclusão: {tempo_consulta:.4f} segundos")
 
 salvar_resultados_csv(linha_resultado)
 

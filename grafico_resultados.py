@@ -5,7 +5,7 @@ import matplotlib.pyplot as plt
 operacoes = []
 tempos = []
 
-with open('results.csv', newline='') as csvfile:
+with open('results.csv', newline='', encoding='utf-8') as csvfile:
     reader = csv.reader(csvfile)
     next(reader)  # Pula o cabeçalho
     for row in reader:

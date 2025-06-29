@@ -1,100 +1,110 @@
+import pandas as pd
 import mysql.connector
 import time
 import csv
-import random
 
-# Conexão com o banco de dados
-conn = mysql.connector.connect(
+# Ler o CSV
+# df = pd.read_csv(r'C:\Program Files\MySQL\MySQL Server 8.0\Uploads\olist_customers_dataset.csv')
+# df = pd.read_csv(r'C:\Program Files\MySQL\MySQL Server 8.0\Uploads\olist_orders_dataset.csv') 
+
+# Conectar ao MySQL
+conexao = mysql.connector.connect(
     host='localhost',
     user='root',
-    password='Ramon@2002',
-    database='benchmark'
+    password='null',
+    database='projetodb'
 )
-cursor = conn.cursor()
 
-# Inserção de clientes
-def inserir_clientes(n):
+cursor = conexao.cursor()
+
+# Medir tempo de execução
+inicio = time.time()
+
+# Inserir dados
+# for _, row in df.iterrows():
+#     cursor.execute(
+#         """INSERT INTO customers (
+#             customer_id,
+#             customer_unique_id,
+#             customer_zip_code_prefix,
+#             customer_city,
+#             customer_state
+#         ) VALUES (%s, %s, %s, %s, %s)""",
+#         tuple(row)
+#     )
+
+# for _, row in df.iterrows():
+#     cursor.execute(
+#         """INSERT INTO orders (
+#             order_id,
+#             customer_id,
+#             order_Status,
+#             order_purchase_timestamp,
+#             order_approved_at,
+#             order_delivered_carrier_date,
+#             order_delivered_customer_date,
+#             order_estimated_delivery_date
+#         ) VALUES (%s, %s, %s, %s, %s, %s, %s, %s)""",
+#         tuple(row)
+#     )
+
+# def consulta_simples():
+#     inicio = time.time()
+#     cursor.execute("SELECT * FROM customers WHERE customer_city = 'Governador Valadares'")
+#     resultado = cursor.fetchall()
+#     fim = time.time()
+#     return fim - inicio
+
+# tempo_consulta = consulta_simples()
+
+# def consulta_complexa():
+#     inicio = time.time()
+#     cursor.execute("SELECT c.customer_state AS Estados, COUNT(o.order_id) AS total_pedidos " \
+# "FROM customers c " \
+# "JOIN orders o ON c.customer_id = o.customer_id " \
+# "GROUP BY c.customer_state " \
+# "HAVING total_pedidos > 50 " \
+# "ORDER BY total_pedidos DESC")
+#     resultado = cursor.fetchall()
+#     fim = time.time()
+#     return fim - inicio
+
+# tempo_consulta = consulta_complexa()
+
+# def atualizar():
+#     inicio = time.time()
+#     cursor.execute("UPDATE customers " \
+# "SET customer_city = 'Uai sô '" \
+# "WHERE customer_state = 'MG'")
+#     conexao.commit()
+#     fim = time.time()
+#     return fim - inicio
+
+# tempo_consulta = atualizar()
+
+def deletar():
     inicio = time.time()
-    for i in range(n):
-        cursor.execute("INSERT INTO clientes (nome, email) VALUES (%s, %s)",
-                       (f'Cliente{i}', f'cliente{i}@email.com'))
-    conn.commit()
+    cursor.execute("DELETE FROM customers WHERE customer_state = 'ES'")
+    conexao.commit()
     fim = time.time()
     return fim - inicio
 
-# Inserção de produtos
-def inserir_produtos(n):
-    inicio = time.time()
-    for i in range(n):
-        cursor.execute("INSERT INTO produtos (nome, preco) VALUES (%s, %s)",
-                       (f'Produto{i}', round(random.uniform(10.0, 100.0), 2)))
-    conn.commit()
-    fim = time.time()
-    return fim - inicio
+tempo_consulta = deletar()
 
-# Consulta simples
-def consulta_simples():
-    inicio = time.time()
-    cursor.execute("SELECT * FROM produtos WHERE preco > 50")
-    resultado = cursor.fetchall()
-    fim = time.time()
-    return fim - inicio
-
-# Consulta complexa
-def consulta_complexa():
-    inicio = time.time()
-    cursor.execute("""
-        SELECT p.id, c.nome, pr.nome, ip.quantidade 
-        FROM pedidos p 
-        JOIN clientes c ON p.cliente_id = c.id
-        JOIN itens_pedido ip ON p.id = ip.pedido_id
-        JOIN produtos pr ON ip.produto_id = pr.id
-    """)
-    resultado = cursor.fetchall()
-    fim = time.time()
-    return fim - inicio
-
-# Atualização de produtos
-def atualizar_produtos():
-    inicio = time.time()
-    cursor.execute("""
-        UPDATE produtos
-        SET preco = preco * 1.10
-        WHERE preco < 50
-    """)
-    conn.commit()
-    fim = time.time()
-    return fim - inicio
-
-# Exclusão de clientes
-def deletar_clientes():
-    inicio = time.time()
-    cursor.execute("""
-        DELETE FROM clientes
-        WHERE nome LIKE 'Cliente9%'
-    """)
-    conn.commit()
-    fim = time.time()
-    return fim - inicio
-
-# Salvando os resultados em CSV
-def salvar_resultados_csv(resultados):
-    with open('results.csv', mode='w', newline='') as file:
+# Salvar o resultado no CSV
+def salvar_resultados_csv(linha_resultado):
+    with open('results.csv', mode='a', newline='') as file:
         writer = csv.writer(file)
-        writer.writerow(['Operação', 'Tempo (s)'])
-        writer.writerows(resultados)
+        if file.tell() == 0:
+            writer.writerow(['Operação', 'Tempo (s)'])
+        writer.writerow(linha_resultado)
 
-# Executando tudo
-resultados = []
-resultados.append(['Inserção de Clientes', inserir_clientes(1000)])
-resultados.append(['Inserção de Produtos', inserir_produtos(1000)])
-resultados.append(['Consulta Simples', consulta_simples()])
-resultados.append(['Consulta Complexa', consulta_complexa()])
-resultados.append(['Atualização em Massa', atualizar_produtos()])
-resultados.append(['Exclusão em Massa', deletar_clientes()])
+operacao = 'Exclusão em massa - tabela customers'
+linha_resultado = [operacao, round(tempo_consulta, 4)]
 
-salvar_resultados_csv(resultados)
+print(f"Tempo total de exclusão: {tempo_consulta:.4f} segundos")
 
-# Fechando conexão
+salvar_resultados_csv(linha_resultado)
+
 cursor.close()
-conn.close()
+conexao.close()
